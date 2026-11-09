@@ -1,0 +1,17 @@
+# Normalize text in Git and in working trees to LF, including C# and MSBuild.
+* text=auto eol=lf
+
+# Native Windows command scripts require CRLF in working trees.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Keep binary assets byte-for-byte.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.zip binary
+*.dll binary
+*.exe binary
+*.pfx binary
+*.pdf binary

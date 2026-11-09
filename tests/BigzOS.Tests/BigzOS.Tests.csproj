@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MSTest" Version="4.0.2" />
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+    <ProjectReference Include="../../src/BigzOS.Core/BigzOS.Core.csproj" />
+    <ProjectReference Include="../../src/BigzOS.Cli/BigzOS.Cli.csproj" />
+  </ItemGroup>
+</Project>

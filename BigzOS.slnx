@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/BigzOS.Core/BigzOS.Core.csproj" />
+  <Project Path="src/BigzOS.Cli/BigzOS.Cli.csproj" />
+  <Project Path="tests/BigzOS.Tests/BigzOS.Tests.csproj" />
+</Solution>
