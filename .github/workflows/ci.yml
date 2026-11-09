@@ -21,10 +21,10 @@ jobs:
       DOTNET_CLI_HOME: ${{ github.workspace }}/.dotnet-home
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
     steps:
-      # Official GitHub action, pinned to the verified v4 commit.
+      # Official GitHub action, pinned to the verified v7.0.1 commit (Node.js 24).
       # The temporary read-only github.token supports public and private repos.
       - name: Checkout event commit
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           clean: false
