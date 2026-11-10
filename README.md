@@ -11,6 +11,14 @@ nome do processador e memória física total em GiB. Cada campo pode aparecer co
 `indisponível` quando uma consulta falha. A versão usa a identificação técnica
 fornecida pelo Windows, que pode conter `10.0` no Windows 11; não informa a edição comercial.
 
+`bigz info --json` escreve um objeto JSON na saída padrão com quatro campos:
+`windowsVersion`, `architecture`, `processor` e `totalMemoryBytes`. Os três
+primeiros são strings e a memória é um inteiro em bytes. Campos indisponíveis
+aparecem como `null`. Uma coleta parcial mantém o JSON válido e retorna código 1.
+Em plataforma incompatível, a mensagem vai para stderr e o código é 1.
+
+`bigz --version` mostra a versão do build (por exemplo, `0.2.0`) sem coletar dados.
+
 Sem telemetria, rede em execução, elevação, escrita no registro ou alterações
 de serviços, Defender, UAC, firewall ou Windows Update. Execute como usuário comum.
 
@@ -48,7 +56,7 @@ Referência: [telemetria da plataforma de testes](https://learn.microsoft.com/do
 A política de `.gitattributes` usa LF para texto (C#, MSBuild, YAML e documentação),
 CRLF para scripts `.bat`/`.cmd` e preserva binários. Não exige alterar a configuração global do Git.
 
-Códigos de saída: 0 para sucesso/ajuda; 1 para coleta parcial ou plataforma
+Códigos de saída: 0 para sucesso, ajuda ou versão; 1 para coleta parcial ou plataforma
 incompatível; 2 para argumentos inválidos. Comando sem argumentos exibe ajuda.
 
 ## Organização
@@ -64,7 +72,8 @@ oficial `actions/checkout`, fixada por SHA. O token temporário do GitHub tem ap
 `contents: read` no job e não é persistido no Git. O checkout funciona para o próprio
 repositório público ou privado. Não há referência a secrets personalizados, actions
 de terceiros, elevação ou deploy. Build e testes não recebem o token em argumentos
-ou variáveis de ambiente definidos pelo projeto.
+ou variáveis de ambiente definidos pelo projeto. Após os testes unitários, o CI
+executa o `bigz.exe` no Windows e valida a versão e o JSON da coleta real.
 
 ## Licença
 

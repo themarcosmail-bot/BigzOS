@@ -37,4 +37,23 @@ jobs:
         run: dotnet build BigzOS.slnx --configuration Release --no-restore
       - name: Test
         run: dotnet test BigzOS.slnx --configuration Release --no-build --no-restore
-
+      - name: Smoke test Bigz Toolkit on Windows
+        shell: pwsh
+        run: |
+          $bigz = './src/BigzOS.Cli/bin/Release/net10.0/bigz.exe'
+          $version = & $bigz --version
+          if ($LASTEXITCODE -ne 0 -or $version -cnotmatch '^\d+\.\d+\.\d+$') {
+            throw 'Unexpected CLI version output or exit code.'
+          }
+          $json = & $bigz info --json
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Windows system information collection failed.'
+          }
+          $info = ConvertFrom-Json -InputObject $json -AsHashtable
+          if ($info.Count -ne 4 -or
+              [string]::IsNullOrWhiteSpace($info.windowsVersion) -or
+              [string]::IsNullOrWhiteSpace($info.architecture) -or
+              [string]::IsNullOrWhiteSpace($info.processor) -or
+              $info.totalMemoryBytes -isnot [long] -or $info.totalMemoryBytes -le 0) {
+            throw 'Unexpected system information JSON.'
+          }
