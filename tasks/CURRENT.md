@@ -119,10 +119,49 @@ parte desta revisão. Não houve commit, push ou alterações de configurações
   persist-credentials: false, clean: false, set-safe-directory: false, opt-outs,
   runner Windows, timeout e comandos de restore/build/test. Sem novos triggers,
   secrets, elevação ou funcionalidades. Nenhuma dependência baixada localmente.
-- O sucesso registrado acima pertence ao pin anterior. O novo pin ainda precisa
-  de uma execução no GitHub; nenhuma execução remota foi iniciada nesta manutenção.
+- O patch recebido informa validação remota do novo pin no run nº 2, commit
+  `a4c8098`. Essa informação não foi verificada nesta execução local; não foi
+  iniciado CI nem consultada a rede para confirmar logs remotos.
 - Verificações locais desta manutenção: build Release --no-restore com zero
   avisos/erros; suíte completa --no-build --no-restore com nove aprovados,
   zero falhas e zero ignorados. Diff sem erros de whitespace e arquivos em LF.
   Alterações limitadas a .github/workflows/ci.yml e tasks/CURRENT.md.
   Nenhum commit, push ou alteração de configuração do Windows foi executado.
+
+## Bigz Toolkit v0.2.0 — validação local em 2026-11-10
+
+- Checkout exclusivo: C:\Dev\.maestri\floors\bigzos--pilotv020, branch
+  pilot/v0.2.0, HEAD a4c8098. Estado inicial: somente ?? .maestri/.
+- Fase 1: git apply --check do patch em Downloads retornou 0, sem saída.
+  Fase 2: primeira aplicação bloqueada pelo sandbox (código 1), sem mudanças
+  no checkout. Após autorização para executar fora do sandbox, git apply
+  retornou 0, sem saída. Não houve elevação de administrador do Windows.
+- SDK 10.0.403. Antes de todo dotnet foram definidas DOTNET_CLI_HOME e
+  NUGET_PACKAGES dentro deste checkout; DOTNET_CLI_TELEMETRY_OPTOUT=1,
+  TESTINGPLATFORM_TELEMETRY_OPTOUT=1, DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1,
+  DOTNET_GENERATE_ASPNET_CERTIFICATE=false e DOTNET_ADD_GLOBAL_TOOLS_TO_PATH=false.
+- Primeiro build Release --no-restore: código 1, NETSDK1004 nos três projetos,
+  pois project.assets.json não existia. Restore oficial com NuGet.Config:
+  código 0, três projetos restaurados, sem adicionar referências de pacotes.
+- Após restore, build Release --no-restore: código 0, zero avisos/erros.
+  O primeiro dotnet test retornou 0 sem executar testes. A configuração herdada
+  não habilitava o runner MSTest. Corrigidos apenas OutputType=Exe e
+  EnableMSTestRunner=true no projeto de testes e test.runner em global.json
+  para Microsoft.Testing.Platform, usando os pacotes já existentes.
+- Após a correção: dotnet build BigzOS.slnx --configuration Release --no-restore:
+  código 0, zero avisos/erros. dotnet test BigzOS.slnx --configuration Release
+  --no-build --no-restore: código 0, 12 aprovados, zero falhas e zero ignorados.
+  Fontes simuladas preservadas. Incluem JSON completo em bytes, JSON parcial
+  com processor/totalMemoryBytes null e retorno 1, versão sem coleta e saída
+  textual completa/parcial. Não foi provocada falha na máquina real.
+- Smoke local do bigz.exe Release: --version produziu somente 0.2.0 (código 0).
+  info --json retornou código 0, exatamente windowsVersion, architecture,
+  processor e totalMemoryBytes; memória inteira de 16965443584 bytes.
+  info retornou código 0, quatro linhas e memória 15.80 GiB. Assertions de
+  nomes dos campos, tipo da memória, versão e equivalência textual passaram.
+- git diff --check: código 0, sem saída antes do registro final. Validação
+  local Windows x64; não foi executada validação Linux nesta sessão.
+- O workflow inclui smoke de versão e JSON reais; o workflow alterado ainda
+  não foi executado no GitHub nesta sessão. Permanecem três projetos, sem novas
+  dependências, telemetria ou rede no produto, alterações do Windows, staging,
+  commit ou push. C:\Dev\BigzOS (main) não foi editado.

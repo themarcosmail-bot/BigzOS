@@ -11,7 +11,7 @@
 7. CI com action oficial actions/checkout fixada por SHA, permissões globais vazias
    e apenas contents: read no job. O token temporário não é persistido no Git;
    checkout suporta o próprio repositório público ou privado, sem secrets personalizados.
-   Referência: [action oficial](https://github.com/actions/checkout/tree/11d5960a326750d5838078e36cf38b85af677262).
+   Referência: [action oficial v7.0.1](https://github.com/actions/checkout/tree/3d3c42e5aac5ba805825da76410c181273ba90b1).
    O runner precisa ter SDK .NET 10; ausência causa falha explícita, sem instalação automática.
 8. CORE/STUDIO, mutações do sistema e distribuição ficam
    para decisões futuras do mantenedor.
@@ -19,4 +19,7 @@
    sem termos adicionais. LICENSE preserva o texto oficial integral da GNU.
    Metadados NuGet e de assembly usam o identificador SPDX; componentes externos
    mantêm suas licenças. Auditoria das dependências em docs/LICENSING.md.
+10. Na v0.2.0, `info --json` serializa o mesmo snapshot da saída textual. O formato
+    usa bytes para a memória e `null` para campos indisponíveis. `--version` lê
+    a versão do build sem criar a fonte de dados.
 

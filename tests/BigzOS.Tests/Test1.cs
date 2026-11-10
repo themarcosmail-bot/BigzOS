@@ -1,3 +1,4 @@
+using System.Text.Json;
 using BigzOS.Cli;
 using BigzOS.Core;
 namespace BigzOS.Tests;
@@ -38,9 +39,42 @@ public sealed class InformationTests
         using var output = new StringWriter();
         using var error = new StringWriter();
         Assert.AreEqual(0, CliApplication.Run(["info"], output, error, true, () => new FakeSource()));
-        StringAssert.Contains(output.ToString(), "Memória física total: 8.00 GiB");
-        StringAssert.Contains(output.ToString(), "Processador: CPU fixture");
+        Assert.AreEqual(string.Join(output.NewLine, "Windows: Windows fixture", "Arquitetura: Arm64",
+            "Processador: CPU fixture", "Memória física total: 8.00 GiB", ""), output.ToString());
         Assert.AreEqual("", error.ToString());
+    }
+
+    [TestMethod]
+    public void VersionDoesNotCollectOrRequireWindows()
+    {
+        using var output = new StringWriter();
+        using var error = new StringWriter();
+        Assert.AreEqual(0, CliApplication.Run(["--version"], output, error, false, NeverCreate));
+        Assert.AreEqual("0.2.0" + output.NewLine, output.ToString());
+        Assert.AreEqual("", error.ToString());
+    }
+
+    [TestMethod]
+    [DataRow(false, 0)]
+    [DataRow(true, 1)]
+    public void InfoJsonPreservesAvailableValuesAndUsesNullForFailures(bool partial, int expectedExit)
+    {
+        using var output = new StringWriter();
+        using var error = new StringWriter();
+        var source = new FakeSource { FailProcessor = partial, FailMemory = partial };
+        Assert.AreEqual(expectedExit, CliApplication.Run(["info", "--json"], output, error, true, () => source));
+        Assert.AreEqual("", error.ToString());
+        using var json = JsonDocument.Parse(output.ToString());
+        var fields = json.RootElement;
+        Assert.AreEqual(4, fields.EnumerateObject().Count());
+        Assert.AreEqual("Windows fixture", fields.GetProperty("windowsVersion").GetString());
+        Assert.AreEqual("Arm64", fields.GetProperty("architecture").GetString());
+        Assert.AreEqual(partial ? null : "CPU fixture", fields.GetProperty("processor").GetString());
+        var memory = fields.GetProperty("totalMemoryBytes");
+        if (partial)
+            Assert.AreEqual(JsonValueKind.Null, memory.ValueKind);
+        else
+            Assert.AreEqual(8589934592UL, memory.GetUInt64());
     }
 
     [TestMethod]
@@ -81,6 +115,10 @@ public sealed class InformationTests
     public void InvalidArgumentsNeverCollect()
     {
         Assert.AreEqual(2, CliApplication.Run(["info", "extra"], TextWriter.Null,
+            TextWriter.Null, true, NeverCreate));
+        Assert.AreEqual(2, CliApplication.Run(["info", "--json", "extra"], TextWriter.Null,
+            TextWriter.Null, true, NeverCreate));
+        Assert.AreEqual(2, CliApplication.Run(["--version", "extra"], TextWriter.Null,
             TextWriter.Null, true, NeverCreate));
     }
 
